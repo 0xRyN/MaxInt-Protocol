@@ -12,6 +12,7 @@ _An implementation of the max int protocol in C with POSIX threads and mutex_
 
 - If you run **client2**, you will recieve a NOP message (No user has sent an INT yet).
 - If you run **client1**, the server will receive 5 random integers from 0 to 10000 exclusive. The server will keep the highest score + highest user data.
+- If you run **client2** after running **client1**, you will get the highest int, along with the sender's user info (IP and Username).
 
 PS : The IP adresses that the clients connect to are in a **#define** macro. You can change that easily for each client.
 
