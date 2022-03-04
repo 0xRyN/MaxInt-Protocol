@@ -76,8 +76,9 @@ int receive_int(int sock, char *username, uint32_t *ip) {
     uint16_t int_val;
     memcpy(&int_val, buffer, 2);
     int_val = ntohs(int_val);
+    printf("-----------------\n");
+    printf("Integer received : %d\n", int_val);
     printf("Current max : %d\n", max_user.max);
-    printf("Received INT with value %d\n", int_val);
     if (int_val > max_user.max) {
         pthread_mutex_lock(&mutex);
         // Update max and user info
@@ -87,6 +88,7 @@ int receive_int(int sock, char *username, uint32_t *ip) {
         pthread_mutex_unlock(&mutex);
         printf("Updated max to %d\n", max_user.max);
     }
+    printf("-----------------\n");
 
     return 0;
 }
