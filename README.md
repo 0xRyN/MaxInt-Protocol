@@ -14,3 +14,5 @@ _An implementation of the max int protocol in C with POSIX threads and mutex_
 - If you run **client1**, the server will receive 5 random integers from 0 to 10000 exclusive. The server will keep the highest score + highest user data.
 
 PS : The IP adresses that the clients connect to are in a **#define** macro. You can change that easily for each client.
+
+**Valgrind Test :** ==6323== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

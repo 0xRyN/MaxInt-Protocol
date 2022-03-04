@@ -13,6 +13,7 @@
 #define MAX_NAME 10
 
 int PORT = 8080;
+int received_int_flag = 0;
 
 typedef struct User {
     uint16_t max;
@@ -68,45 +69,53 @@ int receive_int(int sock, char *username, uint32_t *ip) {
         perror("recv didn't receieve an uint16_t");
         exit(1);
     }
+    // If flag is 0, set it to 1
+    if (!received_int_flag) {
+        received_int_flag = 1;
+    }
     uint16_t int_val;
     memcpy(&int_val, buffer, 2);
-    printf("Beofre converting : %d\n", int_val);
     int_val = ntohs(int_val);
-    printf("Received INT message with value %d\n", int_val);
     printf("Current max : %d\n", max_user.max);
+    printf("Received INT with value %d\n", int_val);
     if (int_val > max_user.max) {
-        printf("We are here\n");
         pthread_mutex_lock(&mutex);
         // Update max and user info
         max_user.max = int_val;
         max_user.ip = *ip;
         strcpy(max_user.username, username);
         pthread_mutex_unlock(&mutex);
+        printf("Updated max to %d\n", max_user.max);
     }
-    printf("Updated max !\n");
 
     return 0;
 }
 
 int respond_max(int sock) {
-    char buffer[100];
-    int offset = 0;
-    // Convert MAX to big endian
-    printf("Sending max : %d\n", max_user.max);
-    uint16_t max = htons(max_user.max);
-    memmove(buffer + offset, "RES", 3);
-    offset += 3;
+    if (!received_int_flag) {
+        printf("No max received yet\n");
+        send(sock, "NOP", 3, 0);
 
-    memmove(buffer + offset, max_user.username, strlen(max_user.username));
-    offset += strlen(max_user.username);
+    } else {
+        char buffer[100];
+        int offset = 0;
+        // Convert MAX to big endian
+        printf("Sending max : %d\n", max_user.max);
+        uint16_t max = htons(max_user.max);
+        memmove(buffer + offset, "RES", 3);
+        offset += 3;
 
-    memmove(buffer + offset, &max_user.ip, 4);
-    offset += 4;
+        memmove(buffer + offset, max_user.username, strlen(max_user.username));
+        offset += strlen(max_user.username);
 
-    memmove(buffer + offset, &max, 2);
-    offset += 2;
+        memmove(buffer + offset, &max_user.ip, 4);
+        offset += 4;
 
-    send(sock, buffer, offset, 0);
+        memmove(buffer + offset, &max, 2);
+        offset += 2;
+
+        send(sock, buffer, offset, 0);
+    }
 
     return 0;
 }
