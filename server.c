@@ -88,7 +88,7 @@ int receive_int(int sock, char *username, uint32_t *ip) {
         pthread_mutex_unlock(&mutex);
         printf("Updated max to %d\n", max_user.max);
     }
-    printf("-----------------\n");
+    printf("-----------------\n\n");
 
     return 0;
 }
